@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Grand Stay Hotel Portal</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
@@ -21,9 +22,12 @@
         </div>
         
         <div class="nav-links hidden" id="admin-nav">
-            <button onclick="showPage('home-page')">Dashboard</button>
-            <button onclick="showPage('res-admin-page')">Approvals</button>
+            <button onclick="showPage('home-page')">Home</button>
+            <button onclick="renderAdminApprovals()">Reservation</button>
+            <button onclick="showPage('admin-billing-page')">Billing (Admin)</button>
+            <button onclick="showPage('admin-history-page')">History</button>
             <button onclick="showPage('room-status-page')">Room Status</button>
+            <button onclick="showPage('support-page')">Support/Feedback</button>
         </div>
 
         <div class="user-info">
@@ -36,12 +40,19 @@
 
         <section id="registration-page" class="page">
             <div class="header-box">
-                <h2>Customer Registration</h2>
-                <p>Join us today.</p>
+                <h2>Create Account</h2>
+                <p>Register as a Customer or Admin</p>
             </div>
             <form id="reg-form">
                 <div class="form-group">
-                    <label>Customer Name</label>
+                    <label>Register As:</label>
+                    <select id="reg-role" style="background-color: #f0f8ff; border-color: #007bff;">
+                        <option value="customer">Customer</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Name</label>
                     <input type="text" id="reg-name" maxlength="50" required>
                 </div>
                 <div class="form-group">
@@ -85,7 +96,7 @@
 
         <section id="ack-page" class="page hidden">
             <div class="success-box">
-                <h3 style="color: green;">Consumer Registration successful.</h3>
+                <h3 style="color: green;">Registration successful.</h3>
                 <p>Please save your User ID:</p>
                 <h1 id="ack-id" style="color: #333; letter-spacing: 2px;"></h1>
                 <button onclick="showPage('login-page')" class="btn-blue">Go to Login</button>
@@ -111,7 +122,9 @@
             <div class="hero">
                 <h1>Welcome to Grand Stay</h1>
                 <p>Manage your luxury stay with ease.</p>
-                <button onclick="showPage('res-page')" class="btn-green">Book Now</button>
+                <div id="cust-cta">
+                    <button onclick="showPage('res-page')" class="btn-green">Book Now</button>
+                </div>
             </div>
 
             <div id="checkout-popup" class="popup hidden">
@@ -159,16 +172,34 @@
             </form>
         </section>
 
+        <section id="admin-res-page" class="page hidden" style="max-width: 900px;">
+            <h2>Reservation Approvals</h2>
+            <p>Approve or Reject pending bookings.</p>
+            <div id="admin-res-table"></div>
+        </section>
+
         <section id="billing-page" class="page hidden">
             <h2>Your Billing</h2>
             <div id="billing-content"></div>
+        </section>
+
+        <section id="admin-billing-page" class="page hidden">
+            <h2>Generate Invoice</h2>
+            <div class="form-group">
+                <label>Enter User ID for Invoice Generation:</label>
+                <div class="form-grid">
+                    <input type="text" id="invoice-userid" placeholder="e.g. CUST12345">
+                    <button onclick="generateAdminInvoice()" class="btn-blue">Generate</button>
+                </div>
+            </div>
+            <div id="admin-invoice-result"></div>
         </section>
 
         <section id="payment-page" class="page hidden">
             <h2>Payment Gateway</h2>
             <div class="payment-info">
                 <p>Welcome, <span id="pay-user"></span></p>
-                <p>Bill Amount: <strong id="pay-amount" style="color:green; font-size:1.2em;"></strong> (Read Only)</p>
+                <p>Bill Amount: <strong id="pay-amount" style="color:green; font-size:1.2em;"></strong></p>
                 <p>Mode of Payment: <strong>Debit / Credit</strong></p>
             </div>
             
@@ -198,9 +229,20 @@
             </form>
         </section>
 
-        <section id="data-display-page" class="page hidden">
+        <section id="data-display-page" class="page hidden" style="max-width: 900px;">
             <h2 id="data-title">Records</h2>
             <div id="data-table-container"></div>
+        </section>
+
+        <section id="admin-history-page" class="page hidden">
+            <h2>View User History</h2>
+            <div class="form-group">
+                <label>Enter User ID:</label>
+                <div class="form-grid">
+                    <input type="text" id="history-userid" placeholder="e.g. CUST12345">
+                    <button onclick="searchUserHistory()" class="btn-blue">Search</button>
+                </div>
+            </div>
         </section>
 
         <section id="support-page" class="page hidden">
@@ -251,9 +293,10 @@
         <section id="room-status-page" class="page hidden">
             <h2>Room Status Tracker</h2>
             <div class="form-group">
+                <label>Customer ID (13 digit number)</label>
                 <input type="number" id="status-cust-id" placeholder="Enter Customer ID">
             </div>
-            <button onclick="viewRoomStatus()" class="btn-blue">View Status</button>
+            <button onclick="viewRoomStatus()" class="btn-blue">Submit</button>
             <div id="status-results" style="margin-top:20px;"></div>
         </section>
 
